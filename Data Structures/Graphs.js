@@ -37,18 +37,94 @@ class Graph {
     delete this.adjacencyList[vertex];
   }
   //depth first search(recursive)
-  DFS(vertex) {
+  DFSrecursive(start) {
     //create empty list to store the end result, return at the very end. Stores the order of visited verteices
+    const result = [];
     //create an object to store visited vertices
-    //
+    const visited = {};
+    //preserving the meaning of 'this' for helper functions
+    const adjacencyList = this.adjacencyList;
+    //helper function
+    (function dfs(vertex) {
+      //base case no vertex
+      if (!vertex) return null;
+      //we have visited the vertex
+      visited[vertex] = true;
+      //place the vertex param into the visited object and push it into result array
+      result.push(vertex);
+      adjacencyList[vertex].forEach((neighbour) => {
+        if (!visited[neighbour]) {
+          return dfs(neighbour);
+        }
+      });
+    })(start);
+    return result;
+    //loop over all values in adjList for that vertex
+    //if any of those values haven't been visited, recursively invoke the helper function with that vertex
   }
-  //helper function
-  //place the vertex param into the visited object and push it into result array
-  //loop over all values in adjList for that vertex
-  //if any of those values haven't been visited, recursively invoke the helper function with that vertex
+  DFSiterative(start) {
+    //create a stack to keep track of vertices, initialise starting vertex in here
+    const stack = [start];
+    //create a list to store end result
+    const result = [];
+    //create an object to store visited vertices
+    const visited = {};
+    let currentVertex;
+    //add starting vertex to the stack and mark it as visited
+    visited[start] = true;
+    //while the stack has something in it:
+    while (stack.length) {
+      //pop the next vertex from the stack
+      currentVertex = stack.pop();
+      result.push(currentVertex);
+      //mark it as visited
+      this.adjacencyList[currentVertex].forEach((neighbour) => {
+        if (!visited[neighbour]) {
+          visited[neighbour] = true;
+          //push all of its neighbours into the stack
+          stack.push(neighbour);
+        }
+      });
+    }
+    return result;
+  }
+  BFS(start) {
+    //create a queue/array and place the starting vertex in it
+    const queue = [start];
+    const result = [];
+    const visited = {};
+    let currentVertex;
+    //remove veteices that have been visited, stop them getting added to result array
+    visited[start] = true;
+    ///loop while there is something in the queue
+    while (queue.length) {
+      currentVertex = queue.shift();
+      result.push(currentVertex);
+      this.adjacencyList[currentVertex].forEach((neighbour) => {
+        //if it is not inside the object that stores nodes visited mark it as visited and enqueue that vertex
+        if (!visited[neighbour]) {
+          visited[neighbour] = true;
+          queue.push(neighbour);
+        }
+      });
+    }
+    //once you have finished looping return the array of visited nodes
+    return result;
+  }
 }
 
 let g = new Graph();
-g.addVertex("Tokyo");
-g.addVertex("Dallas");
-g.addVertex("New York");
+g.addVertex("A");
+g.addVertex("B");
+g.addVertex("C");
+g.addVertex("D");
+g.addVertex("E");
+g.addVertex("F");
+
+g.addEdge("A", "B");
+g.addEdge("A", "C");
+g.addEdge("B", "D");
+g.addEdge("C", "E");
+g.addEdge("D", "E");
+g.addEdge("D", "F");
+g.addEdge("E", "F");
